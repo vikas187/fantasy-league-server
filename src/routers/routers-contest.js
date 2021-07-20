@@ -13,7 +13,7 @@ MongoClient.connect(connectionUrl, {useNewUrlParser: true, useUnifiedTopology: t
         return console.log(error);
 
     db = client.db(databaseName);
-    router.post("/contests", auth, async(req, res) => {
+    router.post("/contests", async(req, res) => {
         const contest = req.body;
         console.log(contest);
         try {
