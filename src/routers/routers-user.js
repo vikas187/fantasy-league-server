@@ -4,30 +4,34 @@ const auth = require("../middleware/auth");
 const User = require('../models/users');
 const multer = require('multer');
 const sharp = require('sharp');
+const fs = require("fs");
 
 const upload = multer({
     limits: {
         fileSize: 1000000
     },
-    storage: multer.diskStorage({
-        destination: (req, file, callback) => {
-
-        try {
-            callback(null, `../images/`);
-        } catch(ex) {
-            console.log(ex);
-        }
-          
-        }
-    
-    }),
-    
     fileFilter(req, file, cb) {
         if(!file.originalname.match(/\.(jpg|jpeg)$/)) {
             cb(new Error("Please upload jpg/jpeg file"));
         }
         cb(undefined, true);
     },
+    storage: multer.diskStorage({
+        destination: (req, file, callback) => {
+
+        try {
+            callback(null, "./src/images/uploads/");
+        } catch(ex) {
+            console.log(ex);
+        }
+          
+        },
+
+        filename: (req, file, callback) => {
+            callback(null, file.originalname);
+        }
+    
+    }),
     
 });
 
@@ -87,10 +91,11 @@ router.post('/users/logoutall', auth, async(req, res) => {
 
 router.get("/users/me/avatar", auth, async(req, res)=>{
     try {
-        res.set("Content-type", "image/jpeg");
-        res.status(200).send(req.user.avatar);
+        fs.readFile(__dirname + `/../images/uploads/${req.user.avatar}`, (err, data)=>{
+            res.status(200).send(data.toString('base64'));
+        }); 
     } catch(ex) {
-        res.status(200).send({error: ex});
+        res.status(200).send({error: ex.message});
     }
 })
 
@@ -154,11 +159,9 @@ router.patch("/users/me", auth, async(req,res)=>{
 
 router.post("/users/me/avatar", auth, upload.single('upload'), async(req,res)=>{
     try {
-        const buffer = await sharp(req.file.buffer).resize({width: 250, height: 250}).png().toBuffer();
-        console.log(buffer);
         req.user.avatar = req.file.originalname;
         await req.user.save();
-        res.send();
+        res.status(200).send("Image updated successfully");
     } catch(ex) {
 
         res.status(200).send({error: ex.message});
