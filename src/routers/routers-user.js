@@ -5,6 +5,7 @@ const User = require('../models/users');
 const multer = require('multer');
 const sharp = require('sharp');
 const fs = require("fs");
+const cors = require("cors");
 
 const upload = multer({
     limits: {
@@ -89,7 +90,7 @@ router.post('/users/logoutall', auth, async(req, res) => {
     }
 })
 
-router.get("/users/me/avatar", auth, async(req, res)=>{
+router.get("/users/me/avatar", auth, cors(), async(req, res)=>{
     try {
         fs.readFile(__dirname + `/../images/uploads/${req.user.avatar}`, (err, data)=>{
             res.status(200).send(data.toString('base64'));
