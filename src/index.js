@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-require("./db/mongodb.js");
+//require("./db/mongodb.js");
 require("./db/mongoose.js");
 const cors = require('cors');
 
