@@ -35,6 +35,17 @@ MongoClient.connect(connectionUrl, {useNewUrlParser: true, useUnifiedTopology: t
         }
     });
 
+    router.post("/matches/:id", async(req, res) => {
+        try {
+            const id = req.params.id;
+            const match = await db.collection('Matches').findById({_id: id});
+            res.status(201).send(matches);
+        } catch(ex) {
+            console.log(ex);
+            res.status(400).send({error: ex.message});
+        }
+    });
+
     router.get("/matches/:id", auth, async(req, res) => {
         try {
             const query = req.body;

@@ -75,6 +75,18 @@ MongoClient.connect(connectionUrl, {useNewUrlParser: true, useUnifiedTopology: t
         }
     })
 
+    router.get("/teams/user/:user_id", async(req, res) => {
+        try {
+            const id = req.params.user_id;
+            console.log(id);
+            const team = await db.collection("Teams").find({user_id: id}).toArray();
+            res.status(200).send(JSON.stringify(team));
+        } catch(ex) {
+            console.log(ex);
+            res.status(400).send({error: ex.message});
+        }
+    })
+
     router.get("/teams/", async(req, res) => {
         try {
             const query = req.body;

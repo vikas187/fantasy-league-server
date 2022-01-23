@@ -90,11 +90,22 @@ router.post('/users/logoutall', auth, async(req, res) => {
     }
 })
 
-router.get("/users/me/avatar", auth, cors(), async(req, res)=>{
+router.get("/users/me/avatar", auth, async(req, res)=>{
     try {
-        fs.readFile(__dirname + `/../images/uploads/${req.user.avatar}`, (err, data)=>{
-            res.status(200).send(data.toString('base64'));
-        }); 
+        console.log(req.user);
+        if(req.user.avatar) {
+            fs.readFile(__dirname + `/../images/uploads/${req.user.avatar}`, (err, data)=>{
+                if(data) {
+                    res.status(200).send(data.toString('base64'));
+                } else {
+                    res.status(200).send({error: "not uploaded"});
+                }
+                
+            }); 
+        } else {
+            res.status(200).send({error: "No image"});
+        }
+        
     } catch(ex) {
         res.status(200).send({error: ex.message});
     }
